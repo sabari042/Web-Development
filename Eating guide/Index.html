@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Weather Dashboard</title>
+  <style>
+    /* Base Reset */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #e0f7fa, #ffffff);
+      padding: 20px;
+      color: #333;
+    }
+
+    .container {
+      max-width: 500px;
+      margin: auto;
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    h1 {
+      color: #0288d1;
+      margin-bottom: 20px;
+      font-size: 2rem;
+    }
+
+    input {
+      padding: 12px;
+      width: 70%;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1rem;
+    }
+
+    button {
+      padding: 12px 16px;
+      background-color: #0288d1;
+      color: white;
+      font-size: 1rem;
+      border: none;
+      border-radius: 8px;
+      margin-left: 10px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #0277bd;
+    }
+
+    .weather {
+      margin-top: 25px;
+      padding: 15px;
+      border-radius: 10px;
+      background-color: #f1f8e9;
+      color: #33691e;
+      font-size: 1.1rem;
+      line-height: 1.6;
+      box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
+    }
+
+    @media (max-width: 600px) {
+      input {
+        width: 100%;
+        margin-bottom: 10px;
+      }
+
+      button {
+        width: 100%;
+        margin-left: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🌦 Weather Dashboard</h1>
+    <input type="text" id="cityInput" placeholder="Enter city name" />
+    <button onclick="getWeather()">Get Weather</button>
+
+    <div class="weather" id="weatherResult"></div>
+  </div>
+
+  <script>
+    const apiKey = 'YOUR_API_KEY'; // Replace with your OpenWeatherMap API key
+
+    function getWeather() {
+      const city = document.getElementById('cityInput').value.trim();
+      const resultDiv = document.getElementById('weatherResult');
+
+      if (!city) {
+        resultDiv.textContent = 'Please enter a city name.';
+        return;
+      }
+
+      fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`)
+        .then(response => response.json())
+        .then(data => {
+          if (data.cod !== 200) {
+            resultDiv.textContent = 'City not found. Please try again.';
+            return;
+          }
+
+          const { main, weather, wind, name } = data;
+          resultDiv.innerHTML = `
+            <strong>📍 ${name}</strong><br>
+            🌤 ${weather[0].description}<br>
+            🌡 Temperature: ${main.temp}°C<br>
+            💧 Humidity: ${main.humidity}%<br>
+            🌬 Wind Speed: ${wind.speed} m/s
+          `;
+        })
+        .catch(error => {
+          resultDiv.textContent = 'Error fetching weather data.';
+          console.error(error);
+        });
+    }
+  </script>
+</body>
+</html>
